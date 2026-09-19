@@ -1,0 +1,78 @@
+! =============================================================
+! Routeur R4 — Running Configuration
+! Projet : Supervision Centralisée Zabbix / EVE-NG
+! Auteur  : Mamadou Aliou Barry — Stage L2 RSS — SUP de CO Dakar
+! =============================================================
+
+version 15.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+
+hostname R4
+
+! --- Interfaces ---
+
+interface Ethernet0/0
+ description WAN - NAT Outside - Acces Internet
+ ip address dhcp
+ ip nat outside
+ duplex full
+ no shutdown
+
+interface Ethernet0/1
+ description TRUNK vers SW-1 (Router-on-a-Stick)
+ no ip address
+ duplex full
+ no shutdown
+
+interface Ethernet0/1.10
+ description Passerelle VLAN 10 - Administration
+ encapsulation dot1Q 10
+ ip address 192.168.10.1 255.255.255.0
+ ip nat inside
+
+interface Ethernet0/1.20
+ description Passerelle VLAN 20 - Informatique
+ encapsulation dot1Q 20
+ ip address 192.168.20.1 255.255.255.0
+ ip nat inside
+
+! --- DHCP ---
+
+ip dhcp excluded-address 192.168.10.1 192.168.10.99
+ip dhcp excluded-address 192.168.20.1 192.168.20.99
+
+ip dhcp pool VLAN10
+ network 192.168.10.0 255.255.255.0
+ default-router 192.168.10.1
+ dns-server 8.8.8.8
+
+ip dhcp pool VLAN20
+ network 192.168.20.0 255.255.255.0
+ default-router 192.168.20.1
+ dns-server 8.8.8.8
+
+! --- NAT/PAT ---
+
+ip access-list standard NAT_ACL
+ permit 192.168.10.0 0.0.0.255
+ permit 192.168.20.0 0.0.0.255
+
+ip nat inside source list NAT_ACL interface Ethernet0/0 overload
+
+! --- Route par defaut ---
+
+ip route 0.0.0.0 0.0.0.0 Ethernet0/0
+
+! --- SNMP ---
+! NOTE : Zabbix doit joindre R4 via 192.168.10.1 (Eth0/1.10)
+! et NON via Ethernet0/0 (NAT outside) — sinon SNMP bloque
+
+snmp-server community public RO
+snmp-server location EVE-NG Lab - SUP de CO Dakar
+snmp-server contact Aliou Barry - Admin Reseau
+snmp-server host 192.168.10.50 version 2c public
+
+! --- Fin de configuration ---
+end
