@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<zabbix_export>
+    <version>6.0</version>
+    <date>2026-09-21T13:55:31Z</date>
+    <groups>
+        <group>
+            <uuid>dc579cd7a1a34222933f24f52a68bcd8</uuid>
+            <name>Linux servers</name>
+        </group>
+        <group>
+            <uuid>7df96b18c230490a9a0a9e2307226338</uuid>
+            <name>Templates</name>
+        </group>
+        <group>
+            <uuid>36bff6c29af64692839d077febfc7079</uuid>
+            <name>Templates/Network devices</name>
+        </group>
+        <group>
+            <uuid>6f6799aa69e844b4b3918f779f2abf08</uuid>
+            <name>Zabbix servers</name>
+        </group>
+    </groups>
+    <hosts>
+        <host>
+            <host>Linux-Server</host>
+            <name>Linux-Server</name>
+            <description>agent zabbix vlan it</description>
+            <templates>
+                <template>
+                    <name>Linux by Zabbix agent</name>
+                </template>
+            </templates>
+            <groups>
+                <group>
+                    <name>Linux servers</name>
+                </group>
+            </groups>
+            <interfaces>
+                <interface>
+                    <ip>192.168.20.14</ip>
+                    <interface_ref>if1</interface_ref>
+                </interface>
+            </interfaces>
+            <inventory_mode>DISABLED</inventory_mode>
+        </host>
+        <host>
+            <host>Router</host>
+            <name>Router</name>
+            <templates>
+                <template>
+                    <name>Cisco IOS by SNMP</name>
+                </template>
+            </templates>
+            <groups>
+                <group>
+                    <name>Templates/Network devices</name>
+                </group>
+            </groups>
+            <interfaces>
+                <interface>
+                    <type>SNMP</type>
+                    <ip>192.168.10.1</ip>
+                    <port>161</port>
+                    <details>
+                        <community>public</community>
+                    </details>
+                    <interface_ref>if1</interface_ref>
+                </interface>
+            </interfaces>
+            <inventory_mode>DISABLED</inventory_mode>
+        </host>
+        <host>
+            <host>sw-1</host>
+            <name>sw-1</name>
+            <templates>
+                <template>
+                    <name>Cisco IOS by SNMP</name>
+                </template>
+            </templates>
+            <groups>
+                <group>
+                    <name>Templates/Network devices</name>
+                </group>
+            </groups>
+            <interfaces>
+                <interface>
+                    <type>SNMP</type>
+                    <ip>192.168.20.254</ip>
+                    <port>161</port>
+                    <details>
+                        <community>{$SNMP_COMMUNITY}</community>
+                    </details>
+                    <interface_ref>if1</interface_ref>
+                </interface>
+            </interfaces>
+            <macros>
+                <macro>
+                    <macro>{$ICMP_LOSS_WARN}</macro>
+                    <value>100</value>
+                </macro>
+                <macro>
+                    <macro>{$SNMP_COMMUNITY}</macro>
+                    <value>public</value>
+                </macro>
+            </macros>
+            <inventory_mode>DISABLED</inventory_mode>
+        </host>
+        <host>
+            <host>window-finance</host>
+            <name>window-finance</name>
+            <description>agent window du vlan 10</description>
+            <templates>
+                <template>
+                    <name>Windows by Zabbix agent</name>
+                </template>
+            </templates>
+            <groups>
+                <group>
+                    <name>Templates</name>
+                </group>
+            </groups>
+            <interfaces>
+                <interface>
+                    <ip>192.168.10.13</ip>
+                    <interface_ref>if1</interface_ref>
+                </interface>
+            </interfaces>
+            <inventory_mode>DISABLED</inventory_mode>
+        </host>
+        <host>
+            <host>Zabbix server</host>
+            <name>Zabbix server</name>
+            <templates>
+                <template>
+                    <name>Linux by Zabbix agent</name>
+                </template>
+                <template>
+                    <name>Zabbix server health</name>
+                </template>
+            </templates>
+            <groups>
+                <group>
+                    <name>Zabbix servers</name>
+                </group>
+            </groups>
+            <interfaces>
+                <interface>
+                    <interface_ref>if1</interface_ref>
+                </interface>
+            </interfaces>
+            <inventory_mode>DISABLED</inventory_mode>
+        </host>
+    </hosts>
+    <triggers>
+        <trigger>
+            <expression>last(/window-finance/system.cpu.util)&lt;85</expression>
+            <name>Alerte : Charge CPU élevée sur Windows Finance (&gt;85%)</name>
+            <priority>HIGH</priority>
+        </trigger>
+    </triggers>
+</zabbix_export>
